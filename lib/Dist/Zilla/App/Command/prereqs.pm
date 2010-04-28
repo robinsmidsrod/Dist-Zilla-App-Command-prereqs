@@ -18,10 +18,7 @@ sub execute {
         $_->gather_files for $self->zilla->plugins_with(-FileGatherer)->flatten;
         $_->prune_files  for $self->zilla->plugins_with(-FilePruner)->flatten;
         $_->munge_files  for $self->zilla->plugins_with(-FileMunger)->flatten;
-        for my $plugin ($self->zilla->plugins_with(-FixedPrereqs)->flatten) {
-            my $prereq = $plugin->prereq;
-            $self->zilla->register_prereqs($_ => $prereq->{$_}) for keys %$prereq;
-        }
+        $_->register_prereqs for $self->zilla->plugins_with(-PrereqSource)->flatten;
     };
     my $prereq = $self->zilla->prereq->as_distmeta;
     my %req;
